@@ -42,7 +42,3 @@ initDB().then(()=>{
     })
 }).catch(err => console.error("DB init failed:", err));
 
-
-
-// console.log("ENV:", process.env.PGHOST, process.env.PGDATABASE, process.env.PGUSER, process.env.PGPASSWORD);
-
