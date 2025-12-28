@@ -2,19 +2,47 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
-import env from 'dotenv';
+import dotenv from 'dotenv';
+
 import {sql} from './config/db.js';
+import {aj} from './lib/arcjet.js';
 
 import productRoutes from './routes/productRoutes.js';
-env.config({path: '../.env'});
+dotenv.config({path: '../.env'});
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
+
+app.use(async (req,res,next)=>{
+    try {
+        const decision = await aj.protect(req, { requested: 1 });
+
+        if (decision.isDenied()) {
+            if (decision.reason.isRateLimit()) {
+                res.status(429).json({ error: "Too Many Requests - Rate limit exceeded." });
+            } else if (decision.reason.isBot()) {
+                res.status(403).json({ error: "Access Denied - Bot detected." });
+            } else {
+                res.status(403).json({ error: "Forbidden" });
+            }
+        return;
+    }
+        if(decision.results.some((result)=>result.reason.isBot() && result.reason.isSpoofed())){
+            res.status(403).json({ error: "Access Denied - Spoofed Bot detected." });
+        }
+
+        next();
+    } 
+    catch (error) {
+        console.error("Arcjet protection error:", error);
+        next(error);
+    }
+})
 
 app.use("/api/products",productRoutes);
 
