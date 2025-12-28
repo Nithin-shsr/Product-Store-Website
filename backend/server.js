@@ -28,6 +28,8 @@ async function initDB(){
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `;
+    console.log("Database Initialised Successfully");
+    
     }
     catch (err) {
         console.error("Database connection error:",err);
