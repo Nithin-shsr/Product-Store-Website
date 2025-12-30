@@ -8,7 +8,7 @@ export const aj = arcjet({
         shield({ mode: "LIVE" }),
         detectBot
             ({
-                mode: "LIVE", // Blocks requests.
+                mode: "DRYRUN", // Blocks requests.
                 // Block all bots except the following
                 allow: ["CATEGORY:SEARCH_ENGINE"] // Allow search engine bots
             }),
