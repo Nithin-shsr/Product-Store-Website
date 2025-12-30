@@ -1,12 +1,13 @@
 import { EditIcon, Trash2Icon } from "lucide-react"
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
 
 function ProductCard({ product}) {
   const { deleteProduct } = useProductStore();
+  const navigate = useNavigate();
     const handleDelete = async () => {
     if(window.confirm("Are you sure you want to delete this product?")){
-        await deleteProduct(id);
+        await deleteProduct(product.id);
         navigate("/");
     }
   }
